@@ -30,7 +30,7 @@
     "node-media-server": "^2.1.6"
   },
   "devDependencies": {
-    "ejs": "^2.3.4",
+    "ejs": "^2.5.5",
     "node-ffmpeg": "0.0.0",
     "nodemon": "^1.19.1"
   }
