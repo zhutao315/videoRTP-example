@@ -1,111 +1,18 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
   <body>
-    <h1><%= title %></h1>
-    <p id="p">EJS Welcome to <%= title %></p>
-    <video id="webrtc" playsinline autoplay width="200" height="auto"></video>
-    <div><button id = "btnGetAudioTracks">getAudioTracks()
-                         </button></div> 
-                   <div><button id = "btnGetTrackById">getTrackById()
-                         </button></div> 
-                   <div><button id = "btnGetTracks">getTracks()</button></div> 
-                   <div><button id = "btnGetVideoTracks">getVideoTracks()
-                         </button></div> 
-                   <div><button id = "btnRemoveAudioTrack">removeTrack() - audio
-                         </button></div> 
-                   <div><button id = "btnRemoveVideoTrack">removeTrack() - video
-                      </button></div> 
-   
+    <video id="webrtc" playsinline autoplay width="200" height="auto" muted></video>
+    <button id="open">open</button>
+    <button id="stop">stop</button>
+    <button id="openLive">openLive</button>
   </body>
   <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-  <script src="/javascripts/drawImage.js" ></script>
-  <script>
-    document.getElementById('p').onclick = () => {
-      open('http://localhost:3000/upload')
-    }
-    //open('/');
-  </script>
-
-<script src="/javascripts/client.js" ></script>
-
-<!-- 
-  <script>
-    // Put variables in global scope to make them available to the browser console.
-    const constraints = window.constraints = {
-      audio: false,
-      video: true
-    };
-
-    function handleSuccess(stream, element) {
-      const video = element;
-      const videoTracks = stream.getVideoTracks();
-      console.log('Got stream with constraints:', constraints);
-      console.log(`Using video device: ${videoTracks[0].label}`);
-      window.stream = stream; // make variable available to browser console
-      video.srcObject = stream;
-    }
-
-    function handleError(error) {
-      if (error.name === 'ConstraintNotSatisfiedError') {
-        const v = constraints.video;
-        errorMsg(`The resolution ${v.width.exact}x${v.height.exact} px is not supported by your device.`);
-      } else if (error.name === 'PermissionDeniedError') {
-        errorMsg('Permissions have not been granted to use your camera and ' +
-          'microphone, you need to allow the page access to your devices in ' +
-          'order for the demo to work.');
-      }
-      errorMsg(`getUserMedia error: ${error.name}`, error);
-    }
-
-    function errorMsg(msg, error) {
-      const errorElement = document.querySelector('#errorMsg');
-      errorElement.innerHTML += `<p>${msg}</p>`;
-      if (typeof error !== 'undefined') {
-        console.error(error);
-      }
-    }
-
-    async function init(element) {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        handleSuccess(stream, element);
-      } catch (e) {
-        handleError(e);
-      }
-    }
-
-    if (!!window.RTCPeerConnection) { // adapet.js 使开发无需关注前缀等
-      transVedio("url", "class"/"dom").then(() => {})
-    } else {
-      transVedio("url", "class"/"dom").then(() => {})
-    }
-
+  <script type="module">
+    import flv from '../node_modules/flv.js'
+    import {webrtcSurport, openVideo} from '../node_modules/video-rtp/lib/index'
+    console.log('webrtcSurport, openVideo', webrtcSurport, openVideo)
     
-
-
-    init(document.getElementById("webrtc"));
-
-
-
-    transVideo({
-      url: 'http://localhost:3000/upload',
-      video: 'class',
-      useSocket: true,
-      fallback(open) {
-        document.getElementById('p').onclick = () => {
-          open()
-        }
-      }
-    })
-
-
-
-
-
-  </script> -->
+  </script>
+  
 
 </html>

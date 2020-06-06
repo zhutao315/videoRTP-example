@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <div id="pushStream" style="display: none;"><video id="webrtc" playsinline autoplay width="200" height="auto" muted></video></div>
+    <button id="open">open</button>
+    <button id="stop" style="display: none;">stop</button>
+    <button id="openLive" style="display: none;">openLive</button>
+    <a id="download" download="video.webm" style="display: none;">download</a>
+    <div id="pullStream" style="margin-top: 20px;display: none;"><video id="videoElement" playsinline autoplay controls width="500" height="auto" muted></video></div>
+  </body>
+  <script src="https://cdn.bootcdn.net/ajax/libs/flv.js/1.5.0/flv.min.js"></script>
+  <script src="javascripts/adapter-latest.js"></script>
+  <script src="javascripts/Whammy.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/video-rtp/videoRTP.min.js"></script>
+  <script type='module'>
+    const btn_open = document.getElementById('open')
+    const btn_stop = document.getElementById('stop')
+    const btn_openLive = document.getElementById('openLive')
+    const btn_download = document.getElementById('download')
+    const pushStream = document.getElementById('pushStream')
+    const pullStream = document.getElementById('pullStream')
+    const isSurportWebRTC = videoRTP.webrtcSurport()
+    let record = null
+    let encoder = null
+    if (isSurportWebRTC) {
+      btn_stop.style.display = 'inline-block'
+      btn_openLive.style.display = 'inline-block'
+      pushStream.style.display = 'block'
+      pullStream.style.display = 'block'
+    } else {
+      encoder = new Whammy.Video(15);
+    }
+    function getSocket(isRTC) {
+      let url = `ws://localhost:3000/${isRTC ? 'webm' : 'webp'}`
+      const ws = new WebSocket(url);
+      return new Promise(resolve => {
+        ws.onopen = () => resolve(ws)
+      })
+    }
+    const wsP = getSocket(isSurportWebRTC)
+    
+    btn_open.onclick = () => {
+      videoRTP.openVideo({
+        video: document.getElementById('webrtc'),
+        duration: 100,
+        MINSIZE: 1024,
+        chunks(chunk, canvas) {
+          // sender chunks
+          console.log('sender chunks', chunk)
+          wsP.then(ws => ws.send(chunk))
+          if (!isSurportWebRTC) {
+            encoder.add(canvas)
+          }
+        },
+        ended() {
+          // record chunks ended
+          console.log('record chunks ended')
+          wsP.then(ws => ws.send(0))
+          if (!isSurportWebRTC) { 
+            encoder.compile(output => {
+              console.log('output', output)
+              var url = (window.webkitURL || window.URL).createObjectURL(output);
+              btn_download.href = url;
+              btn_download.style.display = 'inline-block'
+            });
+          }
+            
+        },
+        degrade: true // 不支持webRTC则降级处理打开本地视频
+      }).then(r => record = r)
+    }
+
+    document.getElementById('stop').onclick = () => {
+      record.stop()
+      document.getElementById('videoElement').pause()
+    }
+
+    document.getElementById('openLive').onclick = () => {
+      if (flvjs.isSupported()) {
+          const videoElement = document.getElementById('videoElement');
+          const flvPlayer = flvjs.createPlayer({
+            type: 'flv',
+            url: 'http://localhost:8000/live/video.flv'
+          });
+          flvPlayer.attachMediaElement(videoElement);
+          flvPlayer.load();
+          flvPlayer.play();
+        }
+    }
+    
+  </script>
+  
+
+</html>

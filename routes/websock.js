@@ -1,5 +1,7 @@
 const fs = require('fs');
 const ffmpeg = require('fluent-ffmpeg');
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+ffmpeg.setFfmpegPath(ffmpegPath);
 const { Readable, Duplex } = require('stream');
 
 const createFile = (string, name, cb) => {
